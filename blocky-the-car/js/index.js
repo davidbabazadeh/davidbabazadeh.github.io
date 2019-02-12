@@ -41,6 +41,9 @@ let car = {
 		y: 0,
 		h: .5,
 	},
+	vel: {
+		x: 0,
+	},
 	siz: {
 		w: 1,
 		l: 2,
@@ -119,7 +122,7 @@ class Pers { // pedestrians
 function drawClass(arr) {
 	for (let obj = arr.length - 1; obj >= 0 ; obj--) {
 		arr[obj].draw();
-		if (car.pos.x < arr[obj].posX + arr[obj].w + 2 &&
+		if (car.pos.x < arr[obj].posX + arr[obj].w + 1.8499 &&
 			car.pos.y <= arr[obj].posY + arr[obj].w + 2 &&
 			car.pos.y + car.siz.l >= arr[obj].posY)
 			car.draw();
@@ -137,11 +140,13 @@ function updtClass(arr) {
 			car.pos.y <= arr[obj].posY + arr[obj].w + 2 &&
 			car.pos.y + car.siz.l >= arr[obj].posY + 2
 		   ) {
+			maxSpeed = Math.abs(mps*10).toFixed(3);
 			mps = 0; // CRASH!
 		}
 	}
 }
 
+// misc.
 const coneOrange = new Color(200, 110, 20);
 const skinColor = new Color(210, 165, 60);
 
@@ -150,9 +155,10 @@ let enems = [];
 let enemFreq = 90;
 let enemTimer = 0;
 let dist = 0; // distance travelled
-let mps = -.09; // rate of change of distance;
-let acc = .001; // rate of change of rate of change of distance;
+let mps = -0; // rate of change of distance;
 let secs = 0;
+let score = 0;
+let maxSpeed = 0;
 
 ////////////////////////// CYCLE /////////////////////////////
 function cycle() {
@@ -165,15 +171,17 @@ function cycle() {
 
 		if (keys[65] || keys[37]) { // left (a)
 			if (car.pos.x < 6.4499999999999999)
-				car.pos.x += .15;
+				car.vel.x = .15;
 			else
 				car.pos.x = 6.5;
 		}
 		if (keys[68] || keys[39]) { // right (d)
 			if (car.pos.x > .65000000000000010)
-				car.pos.x -= .15;
+				car.vel.x = -.15;
 			else
 				car.pos.x = .5;
+			if (keys[65] || keys[37])
+				car.vel.x = 0;
 		}
 	
 		enemFreq = Math.floor(90/(secs/270 + 1) + 45)
@@ -190,6 +198,8 @@ function cycle() {
 			}
 			enemTimer = secs + enemFreq;
 		}
+		
+		car.pos.x += car.vel.x
 	}
 	
 	// draw road
@@ -197,20 +207,91 @@ function cycle() {
 	for (i = 0; i <= 20; i++)
 		iso.add(Shape.Prism(new Point(i * 4.5 + dist % 4.5 - 10, 4, 0),
 					  1.5, .5, 0), road.track.clr);
-		
+	
 	car.draw();
 	updtClass(enems);
 	drawClass(enems);
-	
 	
 	ctx.font = canvas.width/30 + "px Courier";
 	ctx.fillText("Distance: " + Math.abs(dist).toFixed(1) + "m", 10, canvas.width/20);
 	ctx.fillText("Speed: " + Math.abs(mps*10).toFixed(3) + "mps", 10, canvas.width/11.5);
 	
 	secs += 1;
-	
-	requestAnimationFrame(cycle);
+	car.vel.x = 0;
+	if (mps === 0)
+		requestAnimationFrame(gameOver)
+	else
+		requestAnimationFrame(cycle);
+		
 }
-requestAnimationFrame(cycle);
 
-// iso.add(Shape.Prism(new Point(0, 0, -.1), 50, 7.4, 0.1), new Color(20, 10, 50));
+function start() {
+	if (keys[32]) {
+		enems = [];
+		enemFreq = 90;
+		enemTimer = 0;
+		dist = 0;
+		mps = -.09;
+		secs = 0;
+		road1.pos.x = -10;
+		document.getElementById("dist").innerHTML = "";
+		document.getElementById("spd").innerHTML = "";
+		requestAnimationFrame(cycle);
+		return;
+	}
+	requestAnimationFrame(start);
+}
+
+let road1 = {
+	pos: {
+		x: -10,
+		z: canvas.height/140,
+	},
+	vel: .5,
+	acc: .0001,
+}
+
+function gameOver() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	road1.pos.z = canvas.height/140;
+	
+	ctx.fillStyle = "#747489";
+	ctx.fillRect(0, canvas.height, canvas.width, -road1.pos.x*40);
+	
+	iso.add(Shape.Prism(new Point(road1.pos.x, 0, road1.pos.z), -20, 2, .15), road.clr);
+	for (i = 0; i <= 5; i++)
+		iso.add(Shape.Prism(new Point(i * 2 + dist % 2 + road1.pos.x - 13, 0, road1.pos.z+1.15),
+					  1, .2,.01), road.track.clr);
+	
+	iso.add(Shape.Prism(new Point(road1.pos.x, 0, road1.pos.z-3), -20, 2, .15), road.clr);
+	for (i = 0; i <= 5; i++)
+		iso.add(Shape.Prism(new Point(i * 2 + dist % 2 + road1.pos.x - 13, 0, road1.pos.z-1.85),
+					  1, .2, .01), road.track.clr);
+	
+	if (road1.pos.x < 5) {
+		road1.pos.x += road1.vel;
+		road1.vel += road1.acc;
+		road1.acc = Math.sqrt(road1.vel + .1)/20;
+	} else {
+		road1.pos.x = 5;
+		ctx.fillStyle = "#905634";
+		ctx.font = "30px Courier";
+		ctx.fillText("score: ", canvas.width/2.5, canvas.height*7/9);
+		ctx.font = "160px Courier";
+		ctx.fillText(" " + score, canvas.width/2.5, canvas.height*7/9);
+		document.getElementById("dist").style.top = canvas.height - (road1.pos.z + 3)*70 + "px";
+		document.getElementById("dist").style.left = canvas.width/2 - 2*71 + "px";
+		document.getElementById("dist").innerHTML = "distance: " + Math.abs(dist).toFixed(1) + "m";
+		document.getElementById("spd").style.top = canvas.height - road1.pos.z*70 + "px";
+		document.getElementById("spd").style.left = canvas.width/2 - 2*71 + "px";
+		document.getElementById("spd").innerHTML = "speed: " + maxSpeed + "mps";
+		if (score < 0)
+			console.log()
+	}
+	if (keys[32]) {
+		requestAnimationFrame(start);
+	} else
+		requestAnimationFrame(gameOver);
+}
+
+requestAnimationFrame(start);
