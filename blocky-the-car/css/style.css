@@ -1,10 +1,23 @@
 body {
-  overflow: hidden;
+
+	overflow: hidden;
 }
 
 canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+}
+
+h1 {
+	position: absolute;
+	top: 100px;
+	left: 100px;
+	z-index: 1;
+	color: #d7c822;
+	font-family: Courier;
+	font-size: 45px;
+	-webkit-transform: rotate(-30deg);
+	text-align: center;
 }
