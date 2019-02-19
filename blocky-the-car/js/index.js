@@ -16,7 +16,7 @@ var Point = Isomer.Point;
 var Color = Isomer.Color;
 var Path = Isomer.Path;
 
-//___________________get keyboard input___________________
+//////////////////// get keyboard input ///////////////////
 const keys = [];
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;
@@ -27,8 +27,36 @@ document.onkeyup = function(e) {
 
 document.body.style.backgroundColor = "#a1dfa5";
 
+/////////////////////// mouse input //////////////////////
+let mouse = {
+  down: false,
+  x: 0,
+  y: 0
+};
+canvas.addEventListener("mousemove", event => {
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
+});
+canvas.addEventListener("mousedown", event => {
+  mouse.down = true;
+});
+canvas.addEventListener("mouseup", event => {
+  mouse.down = false;
+});
+
+function xor(a, b) {
+	if ((a || b) && !(a && b))
+		return true;
+	else
+		return false;
+}
 
 let road = {
+	pos: {
+		x: -10,
+		y: 0,
+		z: 0,
+	},
 	clr: new Color (60,60,75),
 	track: {
 		clr: new Color(80,80,20),
@@ -63,10 +91,47 @@ let car = {
 	},
 }
 
+let info = {
+	modes: [mouse, keys],
+	mode: 1,
+	siz: {
+		r: canvas.width/20,
+	},
+	pos: {
+		x: canvas.width - canvas.width/20 - 20,
+		y: canvas.height - canvas.width/20 - 20,
+	},
+	clr: ["#7aaaee", "#2233aa"],
+	draw(clr = 0) {
+		ctx.beginPath();
+		ctx.arc(info.pos.x, info.pos.y, info.siz.r, 0, Math.PI*2);
+		ctx.fillStyle = info.clr[clr];
+		ctx.fill();
+		ctx.fillStyle = "#c0c0c0c0";
+		ctx.stroke();
+		ctx.fillRect(info.pos.x, info.pos.y, 5, 5);
+	},
+	hovering() {
+		if (Math.sqrt((mouse.x - info.pos.x)*(mouse.x - info.pos.x) +
+					  (mouse.y - info.pos.y)*(mouse.y - info.pos.y)) < info.siz.r)
+			return 1;
+		else
+			return 0;
+	},
+	modeChange() {
+		if (keys[16]) {
+			if (!tab)
+				info.mode = Math.abs(info.mode - 1);
+			tab = true;
+		} else
+			tab = false;
+	}
+}
+
 class Cone {
 	constructor(posX, w, h, clr = coneOrange) {
 		this.posX = posX;
-		this.posY = posX + 8;
+		this.posY = canvas.width/70;
 		this.w = w;
 		this.h = h;
 		this.clr = clr;
@@ -85,11 +150,11 @@ class Cone {
 class Pers { // pedestrians
 	constructor(posX, w, h, drk) {
 		this.posX = posX;
-		this.posY = posX + 8;
+		this.posY = canvas.width/70;
 		this.w = w;
 		this.h = h;
 		this.clr = new Color(skinColor.r/drk, skinColor.g/drk, skinColor.b/drk);
-		this.dir = rand()*1.5 - .75;
+		this.dir = rand()*1.4 - .7;
 	};
 	draw() {
 		iso.add(Shape.Cylinder(Point(this.posY + this.w/2, this.posX + this.w*1.5/5, 2),
@@ -131,7 +196,7 @@ function drawClass(arr) {
 
 function updtClass(arr) {
 	for (let obj = 0; obj < arr.length; obj++) {
-		if (arr[obj].posY <= arr[obj].posX -8) {
+		if (arr[obj].posY <= -canvas.width/70) {
 			arr.splice(obj, 1);
 		}
 		arr[obj].updt(mps); // check for crash
@@ -159,6 +224,8 @@ let mps = -0; // rate of change of distance;
 let secs = 0;
 let score = 0;
 let maxSpeed = 0;
+let tab = false;
+let mouseDown = false;
 
 ////////////////////////// CYCLE /////////////////////////////
 function cycle() {
@@ -168,22 +235,27 @@ function cycle() {
 	if (mps != 0) {
 		mps = 20/(secs/60 + 150) - .2;
 		dist += mps;
-
-		if (keys[65] || keys[37]) { // left (a)
-			if (car.pos.x < 6.4499999999999999)
-				car.vel.x = .15;
-			else
-				car.pos.x = 6.5;
+		
+		if (info.mode === 0) {
+			if (keys[65] || keys[37]) { // left (a)
+				if (car.pos.x < 6.4499999999999999)
+					car.vel.x = .15;
+				else
+					car.pos.x = 6.5;
+			}
+			if (keys[68] || keys[39]) { // right (d)
+				if (car.pos.x > .65000000000000010)
+					car.vel.x = -.15;
+				else
+					car.pos.x = .5;
+				if (keys[65] || keys[37])
+					car.vel.x = 0;
+			}
+		} else if (info.mode === 1) {
+			car.pos.x = -mouse.y/100 -mouse.x/100 + 10.0;
 		}
-		if (keys[68] || keys[39]) { // right (d)
-			if (car.pos.x > .65000000000000010)
-				car.vel.x = -.15;
-			else
-				car.pos.x = .5;
-			if (keys[65] || keys[37])
-				car.vel.x = 0;
-		}
-	
+		
+		// init enems
 		enemFreq = Math.floor(90/(secs/270 + 1) + 45)
 		if (secs >= enemTimer) {
 			let enemType = Math.ceil(rand()*2);
@@ -198,12 +270,12 @@ function cycle() {
 			}
 			enemTimer = secs + enemFreq;
 		}
-		
 		car.pos.x += car.vel.x
 	}
 	
 	// draw road
-	iso.add(Shape.Prism(new Point(-10, 0, 0), 40, 7, .5), road.clr);
+	iso.add(Shape.Prism(new Point(road.pos.x, road.pos.y, road.pos.z),
+						40, 7, .5), road.clr);
 	for (i = 0; i <= 20; i++)
 		iso.add(Shape.Prism(new Point(i * 4.5 + dist % 4.5 - 10, 4, 0),
 					  1.5, .5, 0), road.track.clr);
@@ -218,7 +290,7 @@ function cycle() {
 	
 	secs += 1;
 	car.vel.x = 0;
-	if (mps === 0)
+	if (mps === 0 && road.pos.x === -10)
 		requestAnimationFrame(gameOver)
 	else
 		requestAnimationFrame(cycle);
@@ -236,9 +308,25 @@ function start() {
 		road1.pos.x = -10;
 		document.getElementById("dist").innerHTML = "";
 		document.getElementById("spd").innerHTML = "";
+		document.getElementById("title").innerHTML = "";
 		requestAnimationFrame(cycle);
 		return;
 	}
+	info.modeChange();
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	iso.add(Shape.Prism(new Point(road.pos.x, road.pos.y, road.pos.z),
+						40, 7, .5), road.clr);
+	for (i = 0; i <= 20; i++)
+		iso.add(Shape.Prism(new Point(i * 4.5 + dist % 4.5 - 10, 4, 0),
+					  1.5, .5, 0), road.track.clr);
+	document.getElementById("title").innerHTML = "B L O C K Y<br>T H E<br>C A R";
+	ctx.font = "35px courier";
+	ctx.fillStyle = "#442414"
+	if (-dist % 3.5 <= 1.725)
+		ctx.fillText("space to start", canvas.width/2 - 35*3.5,
+					 canvas.height*9/10)
+	dist-=.05;
 	requestAnimationFrame(start);
 }
 
@@ -253,6 +341,7 @@ let road1 = {
 
 function gameOver() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	info.modeChange();
 	road1.pos.z = canvas.height/140;
 	
 	ctx.fillStyle = "#747489";
