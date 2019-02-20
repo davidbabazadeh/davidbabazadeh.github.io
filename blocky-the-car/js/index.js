@@ -252,7 +252,11 @@ function cycle() {
 					car.vel.x = 0;
 			}
 		} else if (info.mode === 1) {
-			car.pos.x = -mouse.y/100 -mouse.x/100 + 10.0;
+			car.pos.x = -mouse.y/100 -mouse.x/100 + canvas.width/150 + canvas.height/150;
+			if (car.pos.x < .5)
+				car.pos.x = .5;
+			else if (car.pos.x > 6.5)
+				car.pos.x = 6.5;
 		}
 		
 		// init enems
@@ -315,6 +319,8 @@ function start() {
 	info.modeChange();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	
+	info.draw(info.hovering());
+	
 	iso.add(Shape.Prism(new Point(road.pos.x, road.pos.y, road.pos.z),
 						40, 7, .5), road.clr);
 	for (i = 0; i <= 20; i++)
@@ -327,7 +333,10 @@ function start() {
 		ctx.fillText("space to start", canvas.width/2 - 35*3.5,
 					 canvas.height*9/10)
 	dist-=.05;
-	requestAnimationFrame(start);
+	if (info.hovering() && mouse.down) {
+		requestAnimationFrame(infoScreen);
+	} else
+		requestAnimationFrame(start);
 }
 
 let road1 = {
@@ -381,6 +390,16 @@ function gameOver() {
 		requestAnimationFrame(start);
 	} else
 		requestAnimationFrame(gameOver);
+}
+function infoScreen() {
+	document.getElementById("inf").style.fontSize = "30px";
+	if (info.hovering() && mouse.down && !mouseDown) {
+		document.getElementById("inf").style.fontSize = "0px";
+		requestAnimationFrame(start)
+		mouseDown = true;
+	} else {
+		requestAnimationFrame(infoScreen);
+	}
 }
 
 requestAnimationFrame(start);
