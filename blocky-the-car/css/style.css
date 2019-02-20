@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Hanalei+Fill');
 body {
 
 	overflow: hidden;
@@ -20,4 +21,19 @@ h1 {
 	font-size: 45px;
 	-webkit-transform: rotate(-30deg);
 	text-align: center;
+}
+
+h2 {
+	top: -50px;
+	text-align: center;
+	position: relative;
+	z-index: 1;
+	color: #d88d10;
+	font-size: 75px;
+	font-family: 'Hanalei Fill', cursive;
+}
+
+infoScreen {
+	font-size: 0px;
+	color: #aef6ef;
 }
