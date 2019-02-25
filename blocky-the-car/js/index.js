@@ -64,7 +64,7 @@ function blockyTheCar() {
 		},
 	}
 
-	let car = {
+	let car = { // init player
 		pos: {
 			x: 3.75,
 			y: 0,
@@ -79,16 +79,28 @@ function blockyTheCar() {
 		},
 		clr: new Color(90,30,15),
 		whl: {
-			clr: new Color (25,24,20),
+			clr: new Color (30,30,30),
 		},
 		draw: function() {
-			iso.add(Shape.Prism(new Point(car.pos.y, car.pos.x, 0),
-								car.siz.l, car.siz.w, car.siz.h), car.clr);
-			// let whl = Shape.Cylinder(new (Point(car.pos.y - car.siz.w/1.5,
-			// 						  car.pos.x + car.siz.w/2, 0), .2, 3, .2), car.whl.clr);
-			// 						 iso.add(whl
-			// 						 .rotateZ(Point(1.5, 1.5, 0), Math.PI / 12) .translate(0, 0, 1.1))
-
+			
+			var whl2 = Shape.Cylinder(new Point(car.pos.y - car.siz.l/2, car.pos.x - car.siz.w/2 + .1, -.4), .25, 20, .1);
+			iso.add(whl2.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			
+			var whl3 = Shape.Cylinder(new Point(car.pos.y + car.siz.l/2 - .6, car.pos.x - car.siz.w/2 + .1, -.4), .25, 20, .1);
+			iso.add(whl3.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			
+			// iso.add(Shape.Prism(new Point(car.pos.y, car.pos.x, .2), // 000
+			// 					car.siz.l, car.siz.w, car.siz.h), car.clr);
+			iso.add(Shape.Prism(new Point(car.pos.y + car.siz.l*.7, car.pos.x, .2), // 000
+								car.siz.l*.2 + car.siz.h*.4, car.siz.w, car.siz.h*.1+.2), car.clr);
+			iso.add(Shape.Prism(new Point(car.pos.y, car.pos.x, .2), // 000
+								car.siz.l*.7, car.siz.w, car.siz.h), car.clr);
+			
+			var whl1 = Shape.Cylinder(new Point(car.pos.y, car.pos.x + car.siz.w/2 + .1, -.4), .25, 20, .1);
+			iso.add(whl1.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			
+			var whl4 = Shape.Cylinder(new Point(car.pos.y + car.siz.l - .6, car.pos.x + car.siz.w/2 + .1, -.4), .25, 20, .1);
+			iso.add(whl4.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
 		},
 	}
 
@@ -130,7 +142,8 @@ function blockyTheCar() {
 	}
 
 	class Cone {
-		constructor(posX, w, h, clr = coneOrange) {
+		constructor(posX = rand()*6 - 1.5, w, h, clr = coneOrange) {
+			enemTimer += 5;
 			this.posX = posX;
 			this.posY = canvas.width/70;
 			this.w = w;
@@ -149,13 +162,14 @@ function blockyTheCar() {
 		};
 	};
 	class Pers { // pedestrians
-		constructor(posX, w, h, drk) {
+		constructor(posX = rand()*6 - 1.5, w, h, drk) {
+			enemTimer += 10;
 			this.posX = posX;
 			this.posY = canvas.width/70;
 			this.w = w;
 			this.h = h;
 			this.clr = new Color(skinColor.r/drk, skinColor.g/drk, skinColor.b/drk);
-			this.dir = rand()*1.4 - .7;
+			this.dir = rand()*1.3 - .65;
 		};
 		draw() {
 			iso.add(Shape.Cylinder(Point(this.posY + this.w/2, this.posX + this.w*1.5/5, 2),
@@ -164,7 +178,8 @@ function blockyTheCar() {
 								  this.w/17, 30, this.h*.2), this.clr);
 			iso.add(Shape.Prism(Point(this.posY + this.w/5, this.posX + this.w/5, 2 + this.h*.2),
 								this.w*3/5, this.w*3/5, this.h*.25), this.clr);
-			iso.add(Shape.Cylinder(Point(this.posY + this.w/5 + this.w*3.5/10 , this.posX + this.w/5, this.h*.2 + 2),
+			iso.add(Shape.Cylinder(Point(this.posY + this.w/5 + this.w*3.5/10 ,
+										 this.posX + this.w/5, this.h*.2 + 2),
 								  this.w/17, 30, this.h*.5/3), this.clr);
 			iso.add(Shape.Prism(Point(this.posY + this.w*.35,
 									  this.posX + this.w*.35,
@@ -176,12 +191,40 @@ function blockyTheCar() {
 						    this.w*.35, this.w*.35, this.h*.15), this.clr);
 		};
 		updt(vel) {
-			this.posY += vel
+			this.posY += vel;
 			if (this.posX >= 5.5 - this.w)
 				this.dir = Math.abs(this.dir);
 			if (this.posX <= -0.5 - this.w)
 				this.dir = -Math.abs(this.dir);
 			this.posX += vel*2 * this.dir;
+		};
+	};
+	class Driver {
+		constructor(posX = rand()*6 - 1.5, w, l, h) {
+			enemTimer += 8;
+			this.posX = posX;
+			this.posY = canvas.width/70 + 5;
+			this.velY = .002;
+			this.w = w;
+			this.l = l;
+			this.h = h;
+			this.clr = new Color (rand()*150, rand()*150, rand()*150);
+		};
+		draw() {
+			iso.add(Shape.Prism(Point(this.posY, this.posX, 2),
+						    this.l, this.w, this.h), this.clr);
+			ctx.fillStyle = "#dacf10";
+			let a = canvas.height/(canvas.width/405) - (this.posX + 1.3)*67.5;
+			let b = 0;
+			if (a < 10) {
+				b = Math.abs(a)*1.2//(1+Math.cos(Math.PI/3));
+				a = 10;
+			}
+			ctx.fillRect(canvas.width - b - 85, a, 75, 75);
+		};
+		updt(vel) {
+			this.posY += vel - this.velY;
+			this.velY += .008;
 		};
 	};
 
@@ -199,6 +242,7 @@ function blockyTheCar() {
 		for (let obj = 0; obj < arr.length; obj++) {
 			if (arr[obj].posY <= -canvas.width/70) {
 				arr.splice(obj, 1);
+				continue;
 			}
 			arr[obj].updt(mps); // check for crash
 			if (car.pos.x < arr[obj].posX + arr[obj].w + 2 &&
@@ -263,14 +307,17 @@ function blockyTheCar() {
 			// init enems
 			enemFreq = Math.floor(90/(secs/270 + 1) + 45)
 			if (secs >= enemTimer) {
-				let enemType = Math.ceil(rand()*2);
+				let enemType = Math.ceil(rand()*3);
 				switch (enemType) {
 					case 0:
-					case 1:
+					case 1: // cones
 						enems.push(new Cone(rand()*6 - 1.5, 1, 1 + rand()));
 						break;
-					case 2:
-						enems.push(new Pers(rand()*6 - 1.5, 1, 2, rand()*1.5 + 1));
+					case 2: // people
+						enems.push(new Pers(rand()*6 - 1.5, 1, 2, rand()*1 + 1));
+						break;
+					case 3: // drivers
+						enems.push(new Driver(rand()*6 - 1.5, 1, 2, .5));
 						break;
 				}
 				enemTimer = secs + enemFreq;
@@ -289,12 +336,14 @@ function blockyTheCar() {
 		updtClass(enems);
 		drawClass(enems);
 
+		ctx.fillStyle = "#af9f10";
 		ctx.font = canvas.width/30 + "px Courier";
 		ctx.fillText("Distance: " + Math.abs(dist).toFixed(1) + "m", 10, canvas.width/20);
 		ctx.fillText("Speed: " + Math.abs(mps*10).toFixed(3) + "mps", 10, canvas.width/11.5);
 
 		secs += 1;
 		car.vel.x = 0;
+				
 		if (mps === 0 && road.pos.x === -10)
 			requestAnimationFrame(gameOver)
 		else
@@ -304,6 +353,7 @@ function blockyTheCar() {
 
 	function start() {
 		if (keys[32]) {
+			score = 0;
 			enems = [];
 			enemFreq = 90;
 			enemTimer = 0;
@@ -384,8 +434,10 @@ function blockyTheCar() {
 			document.getElementById("spd").style.top = canvas.height - road1.pos.z*70 + "px";
 			document.getElementById("spd").style.left = canvas.width/2 - 2*71 + "px";
 			document.getElementById("spd").innerHTML = "speed: " + maxSpeed + "mps";
-			if (score < 0)
-				console.log()
+			if (score < Math.abs(dist))
+				score += 1;
+			else if (score < Math.abs(dist) * 1.234)
+				score += 1;
 		}
 		if (keys[32]) {
 			requestAnimationFrame(start);
