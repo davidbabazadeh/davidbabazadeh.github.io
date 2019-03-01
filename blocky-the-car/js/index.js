@@ -481,7 +481,7 @@ function blockyTheCar() {
 		}
 	}
 
-	requestAnimationFrame(cycle);
+	requestAnimationFrame(start);
 }
 window.onload = function() {
 	blockyTheCar();
