@@ -34,6 +34,8 @@ h2 {
 }
 
 infoScreen {
+	position: relative;
+	z-index: 2;
 	font-size: 0px;
-	color: #aef6ef;
+	color: #2e00af;
 }
