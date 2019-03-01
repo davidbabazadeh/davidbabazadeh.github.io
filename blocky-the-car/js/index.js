@@ -64,7 +64,7 @@ function blockyTheCar() {
 		},
 	}
 
-	let car = { // init player
+	let car = { // init player init car
 		pos: {
 			x: 3.75,
 			y: 0,
@@ -79,15 +79,19 @@ function blockyTheCar() {
 		},
 		clr: new Color(90,30,15),
 		whl: {
-			clr: new Color (30,30,30),
+			clr: new Color (26,25,29),
+			dir: 0,
 		},
 		draw: function() {
+			ctx.fillStyle = "#111111";
 			
-			var whl2 = Shape.Cylinder(new Point(car.pos.y - car.siz.l/2, car.pos.x - car.siz.w/2 + .1, -.4), .25, 20, .1);
-			iso.add(whl2.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			var whl2 = Shape.Cylinder(new Point(car.pos.y - car.siz.l/2, car.pos.x - car.siz.w/2 + .1, -.4), .25, 4, .1);
+			iso.add(whl2.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1)
+					.rotateY(Point(car.pos.y - car.siz.w, car.pos.x + 888888, 1.5), Math.PI * dist / 3.825)
+					.rotateZ(Point(car.pos.y - 1, car.pos.x -.25, 0), car.whl.dir), car.whl.clr);
 			
-			var whl3 = Shape.Cylinder(new Point(car.pos.y + car.siz.l/2 - .6, car.pos.x - car.siz.w/2 + .1, -.4), .25, 20, .1);
-			iso.add(whl3.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			// var whl3 = Shape.Cylinder(new Point(car.pos.y + car.siz.l/2 - .6, car.pos.x - car.siz.w/2 + .1, -.4), .25, 4, .1);
+			// iso.add(whl3.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
 			
 			// iso.add(Shape.Prism(new Point(car.pos.y, car.pos.x, .2), // 000
 			// 					car.siz.l, car.siz.w, car.siz.h), car.clr);
@@ -96,11 +100,15 @@ function blockyTheCar() {
 			iso.add(Shape.Prism(new Point(car.pos.y, car.pos.x, .2), // 000
 								car.siz.l*.7, car.siz.w, car.siz.h), car.clr);
 			
-			var whl1 = Shape.Cylinder(new Point(car.pos.y, car.pos.x + car.siz.w/2 + .1, -.4), .25, 20, .1);
-			iso.add(whl1.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
-			
-			var whl4 = Shape.Cylinder(new Point(car.pos.y + car.siz.l - .6, car.pos.x + car.siz.w/2 + .1, -.4), .25, 20, .1);
-			iso.add(whl4.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1), car.whl.clr);
+			var whl1 = Shape.Cylinder(new Point(car.pos.y, car.pos.x + car.siz.w/2 + .1, -.4), .25, 4, .1);
+			iso.add(whl1.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1)
+					.rotateY(Point(car.pos.y, car.pos.x + car.siz.w/2 + .1, .5), Math.PI * dist / 3.825)
+					.rotateZ(Point(car.pos.y, car.pos.x -.25, 0), car.whl.dir), car.whl.clr);
+
+			var whl4 = Shape.Cylinder(new Point(car.pos.y + car.siz.l - .6, car.pos.x + car.siz.w/2 + .1, -.4), .25, 4, .1);
+			iso.add(whl4.rotateX(Point(car.pos.y, car.pos.x, 0), Math.PI / 2).translate(0, 0, 1.1)
+					.rotateY(Point(car.pos.y + car.siz.l - .6 , car.pos.x + 888888, .5), Math.PI * dist / 3.825)
+					.rotateZ(Point(car.pos.y + car.siz.l - .6, car.pos.x -.25, 0), car.whl.dir), car.whl.clr);
 		},
 	}
 
@@ -281,7 +289,7 @@ function blockyTheCar() {
 			mps = 20/(secs/60 + 150) - .2;
 			dist += mps;
 
-			if (info.mode === 0) {
+			if (info.mode === 0) { // keyboard controlled movement
 				if (keys[65] || keys[37]) { // left (a)
 					if (car.pos.x < 6.4499999999999999)
 						car.vel.x = .15;
@@ -296,10 +304,12 @@ function blockyTheCar() {
 					if (keys[65] || keys[37])
 						car.vel.x = 0;
 				}
-			} else if (info.mode === 1) {
-				car.pos.x = -mouse.y/100 -mouse.x/100 + canvas.width/150 + canvas.height/150;
-				if (car.pos.x < .5)
-					car.pos.x = .5;
+			} else if (info.mode === 1) { // mouse controlled movement
+				const a = -mouse.y/100 -mouse.x/100 + canvas.width/150 + canvas.height/150;
+				car.whl.dir = -(car.pos.x - a) * Math.PI / 1; // turning wheels
+				car.pos.x = a;
+				if (car.pos.x < .65)
+					car.pos.x = .65;
 				else if (car.pos.x > 6.5)
 					car.pos.x = 6.5;
 			}
@@ -311,7 +321,7 @@ function blockyTheCar() {
 				switch (enemType) {
 					case 0:
 					case 1: // cones
-						enems.push(new Cone(rand()*6 - 1.5, 1, 1 + rand()));
+						enems.push(new Cone(rand()*6 - 1.5, 1, 1.15));//1 + rand()));
 						break;
 					case 2: // people
 						enems.push(new Pers(rand()*6 - 1.5, 1, 2, rand()*1 + 1));
@@ -340,6 +350,10 @@ function blockyTheCar() {
 		ctx.font = canvas.width/30 + "px Courier";
 		ctx.fillText("Distance: " + Math.abs(dist).toFixed(1) + "m", 10, canvas.width/20);
 		ctx.fillText("Speed: " + Math.abs(mps*10).toFixed(3) + "mps", 10, canvas.width/11.5);
+		ctx.font = canvas.width/17 + "px Courier";
+		ctx.fillStyle = "#ea4324";
+		let a = "Score: " + Math.ceil(Math.abs(dist) * 1.234) + "m"
+		ctx.fillText(a, canvas.width - a.length*canvas.width/20, canvas.height - 10);
 
 		secs += 1;
 		car.vel.x = 0;
@@ -352,7 +366,7 @@ function blockyTheCar() {
 	}
 
 	function start() {
-		if (keys[32]) {
+		if (keys[32] || mouse.down) {
 			score = 0;
 			enems = [];
 			enemFreq = 90;
@@ -364,6 +378,16 @@ function blockyTheCar() {
 			document.getElementById("dist").innerHTML = "";
 			document.getElementById("spd").innerHTML = "";
 			document.getElementById("title").innerHTML = "";
+			if (mouse.down) {
+				if (info.hovering()) {
+					mouseDown = true;
+					requestAnimationFrame(infoScreen);
+					return;
+				} else
+					info.mode = 1;
+			}
+			else if (keys[32])
+				info.mode = 0;
 			requestAnimationFrame(cycle);
 			return;
 		}
@@ -381,7 +405,7 @@ function blockyTheCar() {
 		ctx.font = "35px courier";
 		ctx.fillStyle = "#442414"
 		if (-dist % 3.5 <= 1.725)
-			ctx.fillText("space to start", canvas.width/2 - 35*3.5,
+			ctx.fillText("click to start", canvas.width/2 - 35*3.5,
 						 canvas.height*9/10)
 		dist-=.05;
 		if (info.hovering() && mouse.down) {
@@ -406,6 +430,7 @@ function blockyTheCar() {
 
 		ctx.fillStyle = "#747489";
 		ctx.fillRect(0, canvas.height, canvas.width, -road1.pos.x*40);
+		info.draw(info.hovering());
 
 		iso.add(Shape.Prism(new Point(road1.pos.x, 0, road1.pos.z), -20, 2, .15), road.clr);
 		for (i = 0; i <= 5; i++)
@@ -428,34 +453,35 @@ function blockyTheCar() {
 			ctx.fillText("score: ", canvas.width/2.5, canvas.height*7/9);
 			ctx.font = "160px Courier";
 			ctx.fillText(" " + score, canvas.width/2.5, canvas.height*7/9);
-			document.getElementById("dist").style.top = canvas.height - (road1.pos.z + 3)*70 + "px";
-			document.getElementById("dist").style.left = canvas.width/2 - 2*71 + "px";
+			document.getElementById("dist").style.top = canvas.height - (road1.pos.z + 3)*72 + "px";
+			document.getElementById("dist").style.left = canvas.width/2 - 2*70.0 + "px";
 			document.getElementById("dist").innerHTML = "distance: " + Math.abs(dist).toFixed(1) + "m";
-			document.getElementById("spd").style.top = canvas.height - road1.pos.z*70 + "px";
-			document.getElementById("spd").style.left = canvas.width/2 - 2*71 + "px";
+			document.getElementById("spd").style.top = canvas.height - road1.pos.z*72 + "px";
+			document.getElementById("spd").style.left = canvas.width/2 - 2*70.0 + "px";
 			document.getElementById("spd").innerHTML = "speed: " + maxSpeed + "mps";
 			if (score < Math.abs(dist))
 				score += 1;
 			else if (score < Math.abs(dist) * 1.234)
 				score += 1;
 		}
-		if (keys[32]) {
+		if (keys[32] || mouse.down) {
 			requestAnimationFrame(start);
 		} else
 			requestAnimationFrame(gameOver);
 	}
 	function infoScreen() {
-		document.getElementById("inf").style.fontSize = "30px";
+		document.getElementById("inf").style.fontSize = "35px";
 		if (info.hovering() && mouse.down && !mouseDown) {
 			document.getElementById("inf").style.fontSize = "0px";
 			requestAnimationFrame(start)
 			mouseDown = true;
 		} else {
 			requestAnimationFrame(infoScreen);
+			mouseDown = false;
 		}
 	}
 
-	requestAnimationFrame(start);
+	requestAnimationFrame(cycle);
 }
 window.onload = function() {
 	blockyTheCar();
