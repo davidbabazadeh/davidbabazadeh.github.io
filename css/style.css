@@ -1,0 +1,311 @@
+@keyframes float {
+  0%   {transform: translate(0%, -5%);}
+  50% {transform: translate(-0%, 5%);
+	color: #ffa;}
+  100%   {transform: translate(0%, -5%);}
+}
+
+@keyframes pump {
+  0%   {transform: scale(1.05);}
+  50% {transform: scale(1);
+	color: #ffa;}
+  100%   {transform: scale(1.05);}
+}
+
+@keyframes colorShift {
+  0%   {transform: background-color: #000;}
+  50% {transform: background-color: #ffa;}
+  100%   {transform: background-color: #ffa;}
+}
+
+@keyframes shake {
+	0%		{transform: translate(0,0)}
+	6%		{transform: translate(-4%, 1%) skewY(-7deg);}
+	10%		{transform: translate(4%, 2%) skewY(4deg);}
+ 	15%,		{transform: translate(-2%, -2%) skewY(-1deg);}
+ 	20%,		{transform: translate(3%, .4%) skewY(2deg);}
+ 	25%,		{transform: translate(-2%, .3%) skewY(-3deg);}
+ 	30%,		{transform: translate(1%, -1%) skewY(1deg);}
+	35%		{transform: translate(-1%, -.4%) skewY(-.5deg);}
+	100%		{transform: translate(0, 0);}
+}
+
+body {
+	animation: colorShift 1s ease-out;
+	animation-iteration-count: infinite;
+	background-color: #171717;
+}
+
+canvas {
+	position: relative;
+   	display: block;
+	width: 80%;
+	height: 300pt;
+ 	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	color: #000000;
+	padding-top: 40pt;
+	padding-left: 15pt;
+	padding-bottom: 5pt;
+	border-bottom-style: dotted;
+	border-bottom-width: thick;
+	border-left-style: solid;
+	border-left-width: thick;
+	text-shadow: 1pt 1pt #7d5dcd;
+	animation-name: float;
+ 	animation-duration: 2.2s;
+	animation-iteration-count: infinite;
+}
+
+h2 {
+	color: #000000;
+	padding-top: 1pt;
+	padding-left: 15pt;
+	border-left-style: solid;
+	border-left-width: thick;
+	text-shadow: 1pt 1pt #7d5dcd;
+	animation: float 2.2s infinite;
+}
+
+h3 {
+	color: #000000;
+	font-size: 36px;
+	padding-top: 1pt;
+	padding-left: 15pt;
+	border-left-style: solid;
+	border-left-width: thick;
+	border-top-style: dotted;
+	text-shadow: 1pt 1pt #7d5dcd;
+	animation: float 2.2s infinite;
+}
+	
+.pump {
+	animation-name: pump;
+ 	animation-duration: 2.2s;
+	animation-iteration-count: infinite;
+}
+
+.squared {
+	width: 75%;
+	max-width: 600px;
+ 	display: block;
+ 	margin-left: auto;
+ 	margin-right: auto;
+	outline: 7pt solid #1f1f1f;
+}
+
+.circled {
+	background-color: #f0f0ff;
+	padding: 3pt 5% 3pt 5%;
+	border-radius: 50px;
+	margin: 0em 0em 1em 0em;
+	border: 8pt solid #1f1f1f;
+	max-width: 600px;
+ 	margin-left: auto;
+	margin-right: auto;
+}
+
+ul {
+ 	list-style-type: none;
+ 	margin: 0;
+ 	padding: 0;
+ 	overflow: hidden;
+ 	background-color: #1f1f1f;
+}
+
+li {
+ 	float: left;
+}
+
+li a {
+ 	display: block;
+ 	color: #9f75fa;
+ 	text-align: center;
+ 	padding: 15pt 20pt;
+  	text-decoration: none;
+}
+
+li a:hover {
+ 	background-color: #151020;
+}
+
+@mixin reveal {
+	&:before {
+		border-color: #dddddd;
+	}
+}
+
+#solar-system {
+	height: 500px;
+}
+
+/* /////////////////////////////////////// */
+
+.lines {
+  z-index: -3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: auto;
+  width: 90vw;
+}
+.lines .line {
+  position: absolute;
+  width: 1.999999999px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+/*   background: rgba(255, 255, 255, 0.1); */
+  overflow: hidden;
+}
+.lines .line::after {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 15vh;
+  width: 100%;
+  top: -50%;
+  left: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 75%, #ffffff 100%);
+  -webkit-animation: run 3s 1.0s infinite;
+          animation: run 3s 1.0s infinite;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  -webkit-animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+          animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+
+
+.lines .line:nth-child(1) {
+  margin-left: -49%;
+}
+.lines .line:nth-child(1)::after {
+  -webkit-animation-delay: .3s;
+          animation-delay: .3s;
+}
+.lines .line:nth-child(9) {
+  margin-left: 49%;
+}
+.lines .line:nth-child(9)::after {
+  -webkit-animation-delay: .45s;
+          animation-delay: .54s;
+}
+.lines .line:nth-child(2) {
+  margin-left: -36.5%;
+}
+.lines .line:nth-child(2)::after {
+  -webkit-animation-delay: .9s;
+          animation-delay: .9s;
+}
+.lines .line:nth-child(8) {
+  margin-left: 36.5%;
+}
+.lines .line:nth-child(8)::after {
+  -webkit-animation-delay: .9s;
+          animation-delay: .9s;
+}
+.lines .line:nth-child(3) {
+  margin-left: -24%;
+}
+.lines .line:nth-child(3)::after {
+  -webkit-animation-delay: .4s;
+          animation-delay: .4s;
+}
+.lines .line:nth-child(7) {
+  margin-left: 24%;
+}
+.lines .line:nth-child(7)::after {
+  -webkit-animation-delay: .5s;
+          animation-delay: .5s;
+}
+.lines .line:nth-child(4) {
+  margin-left: -11.5%;
+}
+.lines .line:nth-child(4)::after {
+  -webkit-animation-delay: 2s;
+          animation-delay: 2s;
+}
+.lines .line:nth-child(6) {
+  margin-left: 11.5%;
+}
+.lines .line:nth-child(6)::after {
+  -webkit-animation-delay: 1.5s;
+          animation-delay: 1.5s;
+}
+
+.lines .line:nth-child(10) {
+  margin-left: -43%;
+}
+.lines .line:nth-child(10)::after {
+  -webkit-animation-delay: .3s;
+          animation-delay: .3s;
+}
+.lines .line:nth-child(11) {
+  margin-left: 43%;
+}
+.lines .line:nth-child(11)::after {
+  -webkit-animation-delay: .45s;
+          animation-delay: .54s;
+}
+.lines .line:nth-child(12) {
+  margin-left: -30.5%;
+}
+.lines .line:nth-child(21)::after {
+  -webkit-animation-delay: .8s;
+          animation-delay: .8s;
+}
+.lines .line:nth-child(13) {
+  margin-left: 30.5%;
+}
+.lines .line:nth-child(13)::after {
+  -webkit-animation-delay: .63s;
+          animation-delay: .63s;
+}
+.lines .line:nth-child(14) {
+  margin-left: -18%;
+}
+.lines .line:nth-child(14)::after {
+  -webkit-animation-delay: .7s;
+          animation-delay: .7s;
+}
+.lines .line:nth-child(15) {
+  margin-left: 18%;
+}
+.lines .line:nth-child(15)::after {
+  -webkit-animation-delay: 1.43s;
+          animation-delay: 1.43s;
+}
+.lines .line:nth-child(16) {
+  margin-left: -5.5%;
+}
+.lines .line:nth-child(16)::after {
+  -webkit-animation-delay: 1.3s;
+          animation-delay: 1.3s;
+}
+.lines .line:nth-child(17) {
+  margin-left: 5.5%;
+}
+
+@-webkit-keyframes run {
+  0% {
+    top: -50%;
+  }
+  100% {
+    top: 480%;
+  }
+}
+
+@keyframes run {
+  0% {
+    top: -50%;
+  }
+  100% {
+    top: 480%;
+  }
+}
