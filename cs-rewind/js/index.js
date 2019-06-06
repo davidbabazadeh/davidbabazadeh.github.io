@@ -1191,6 +1191,7 @@ function skyGunner() {
 	}
 
 	ctx.fillStyle = "#fe5478";
+	document.getElementById("sky-gunner").style.backgroundColor = "#7fafff";
 
 	////////////////////////////////////////////////////////////
 
@@ -1605,7 +1606,7 @@ function solarSystem() {
 						  planets[i].siz.d,  planets[i].siz.d);
 		}
 
-		ctx.fillStyle = "#ececec";
+		ctx.fillStyle = "#0f0f0f";
 		ctx.font = "20px Courier";
 		ctx.fillText("Earth Days: " + earthDays * 182.6211, 10, 25);
 		earthDays += (360/365.2422/182.6211);
