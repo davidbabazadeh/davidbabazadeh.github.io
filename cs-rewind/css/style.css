@@ -45,6 +45,15 @@ canvas {
 	margin-right: auto;
 }
 
+iframe {
+	position: relative;
+   	display: block;
+	width: 80%;
+	height: 300pt;
+ 	margin-left: auto;
+	margin-right: auto;
+}
+
 h1 {
 	color: #000000;
 	padding-top: 40pt;
@@ -98,7 +107,7 @@ h3 {
 }
 
 .circled {
-	background-color: #f0f0ff;
+	background-color: #e0e0ef;
 	padding: 3pt 5% 3pt 5%;
 	border-radius: 50px;
 	margin: 0em 0em 1em 0em;
@@ -172,8 +181,8 @@ li a:hover {
   top: -50%;
   left: 0;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 75%, #ffffff 100%);
-  -webkit-animation: run 3s 1.0s infinite;
-          animation: run 3s 1.0s infinite;
+  -webkit-animation: run 1s 6.0s infinite;
+          animation: run 3s 6.0s infinite;
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
   -webkit-animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
@@ -201,7 +210,7 @@ li a:hover {
 }
 .lines .line:nth-child(2)::after {
   -webkit-animation-delay: .9s;
-          animation-delay: .9s;
+          animation-delay: .0s;
 }
 .lines .line:nth-child(8) {
   margin-left: 36.5%;
@@ -297,7 +306,7 @@ li a:hover {
     top: -50%;
   }
   100% {
-    top: 480%;
+    top: 400%;
   }
 }
 
@@ -306,6 +315,6 @@ li a:hover {
     top: -50%;
   }
   100% {
-    top: 480%;
+    top: 400%;
   }
 }
